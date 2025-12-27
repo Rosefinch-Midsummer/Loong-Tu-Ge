@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Economics",
+    "type": "directory",
+    "path": "Economics",
+    "children": [
+      {
+        "name": "财富、贫穷与政治.pdf",
+        "type": "file",
+        "path": "Economics/财富、贫穷与政治.pdf",
+        "extension": ".pdf"
+      }
+    ]
+  },
+  {
+    "name": "Politics",
+    "type": "directory",
+    "path": "Politics",
+    "children": [
+      {
+        "name": "the-dictators-handbook.pdf",
+        "type": "file",
+        "path": "Politics/the-dictators-handbook.pdf",
+        "extension": ".pdf"
+      }
+    ]
+  }
+]

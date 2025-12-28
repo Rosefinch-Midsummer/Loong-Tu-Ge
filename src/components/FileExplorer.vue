@@ -103,46 +103,53 @@ function navigateTo(index: number) {
 
 <template>
   <div class="file-explorer">
-    <!-- Header / Navigation -->
-    <div class="header">
-        <div class="breadcrumbs">
-            <span class="crumb root" @click="navigateTo(-1)">
-                <i class="fa-solid fa-home"></i> Home
-            </span>
-            <template v-for="(folder, index) in currentPath" :key="index">
-                <span class="separator">/</span>
-                <span class="crumb" @click="navigateTo(index)">{{ folder }}</span>
-            </template>
-        </div>
-        <div class="search-box">
-            <i class="fa-solid fa-search search-icon"></i>
-            <input v-model="searchQuery" placeholder="Search files..." />
-        </div>
-    </div>
-
-    <!-- Back Button -->
-    <div v-if="currentPath.length > 0 && !searchQuery" class="actions">
-        <button @click="goBack" class="back-btn">
-            <i class="fa-solid fa-arrow-left"></i> Back
-        </button>
-    </div>
-
-    <!-- File List -->
-    <div class="file-list">
-        <div v-for="item in filteredItems" :key="item.path" class="file-item" @click="handleItemClick(item)">
-            <div class="icon">
-                <i v-if="item.type === 'directory'" class="fa-solid fa-folder folder-icon"></i>
-                <i v-else-if="item.extension === '.pdf'" class="fa-solid fa-file-pdf pdf-icon"></i>
-                <i v-else class="fa-solid fa-file file-icon"></i>
-            </div>
-            <div class="info">
-                <div class="name">{{ item.name }}</div>
-                <div class="sub-text" v-if="searchQuery">{{ item.path }}</div>
+    <!-- Fixed Header with Search -->
+    <div class="fixed-header">
+      <div class="header-content">
+        <div class="search-box-wrapper">
+             <div class="search-box">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input v-model="searchQuery" placeholder="Search files..." />
             </div>
         </div>
-        <div v-if="filteredItems.length === 0" class="empty-state">
-            <i class="fa-solid fa-folder-open"></i>
-            <p>No items found.</p>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Navigation / Breadcrumbs -->
+        <div class="navigation-bar">
+             <div class="breadcrumbs">
+                <span class="crumb root" @click="navigateTo(-1)">
+                    <i class="fa-solid fa-home"></i> Home
+                </span>
+                <template v-for="(folder, index) in currentPath" :key="index">
+                    <span class="separator">/</span>
+                    <span class="crumb" @click="navigateTo(index)">{{ folder }}</span>
+                </template>
+            </div>
+             <button v-if="currentPath.length > 0 && !searchQuery" @click="goBack" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+        </div>
+
+        <!-- File List -->
+        <div class="file-list">
+            <div v-for="item in filteredItems" :key="item.path" class="file-item" @click="handleItemClick(item)">
+                <div class="icon">
+                    <i v-if="item.type === 'directory'" class="fa-solid fa-folder folder-icon"></i>
+                    <i v-else-if="item.extension === '.pdf'" class="fa-solid fa-file-pdf pdf-icon"></i>
+                    <i v-else class="fa-solid fa-file file-icon"></i>
+                </div>
+                <div class="info">
+                    <div class="name">{{ item.name }}</div>
+                    <div class="sub-text" v-if="searchQuery">{{ item.path }}</div>
+                </div>
+            </div>
+             <div v-if="filteredItems.length === 0" class="empty-state">
+                <i class="fa-solid fa-folder-open"></i>
+                <p>No items found.</p>
+            </div>
         </div>
     </div>
 
@@ -163,227 +170,281 @@ function navigateTo(index: number) {
 
 <style scoped>
 .file-explorer {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
 }
 
-.header {
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-content {
+    width: 100%;
+    max-width: 1600px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-box-wrapper {
+    width: 100%;
+    max-width: 600px; /* Limit width for aesthetics */
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 16px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    border-color: #80bdff;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.main-content {
+    padding-top: 90px; /* Space for fixed header */
+    padding-bottom: 40px;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+}
+
+.navigation-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .breadcrumbs {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    font-size: 16px;
 }
 
 .crumb {
     cursor: pointer;
-    color: #007bff;
+    color: #495057;
     font-weight: 500;
     transition: color 0.2s;
-}
-
-.crumb:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-
-.crumb.root {
-    font-weight: bold;
-}
-
-.separator {
-    margin: 0 8px;
-    color: #6c757d;
-}
-
-.search-box {
-    position: relative;
-    width: 300px;
-}
-
-.search-box input {
-    width: 100%;
-    padding: 10px 10px 10px 35px;
-    border: 1px solid #ced4da;
-    border-radius: 20px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.search-box input:focus {
-    border-color: #80bdff;
-}
-
-.search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
-}
-
-.actions {
-    margin-bottom: 15px;
-}
-
-.back-btn {
-    background: none;
-    border: none;
-    color: #495057;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 1rem;
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
 }
 
-.back-btn:hover {
+.crumb:hover {
+    color: #007bff;
+    background: #e9ecef;
+}
+
+.crumb.root {
+    font-weight: 600;
+}
+
+.separator {
+    color: #adb5bd;
+    margin: 0 4px;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
     background-color: #e9ecef;
+    color: #495057;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.back-btn:hover {
+    background-color: #dde2e6;
+    transform: translateY(-1px);
 }
 
 .file-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
 
 .file-item {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
     text-align: center;
-    background: white;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border: 1px solid transparent;
 }
 
 .file-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
     border-color: #007bff;
 }
 
 .icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
+    font-size: 48px;
+    margin-bottom: 15px;
 }
 
-.folder-icon {
-    color: #ffc107;
-}
+.folder-icon { color: #ffd700; }
+.pdf-icon { color: #dc3545; }
+.file-icon { color: #6c757d; }
 
-.pdf-icon {
-    color: #dc3545;
-}
-
-.file-icon {
-    color: #6c757d;
-}
-
-.info {
-    width: 100%;
-}
-
-.name {
+.info .name {
     font-weight: 500;
     color: #343a40;
     word-break: break-word;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    line-height: 1.4;
 }
 
-.sub-text {
-    font-size: 0.8rem;
+.info .sub-text {
+    font-size: 12px;
     color: #868e96;
-    margin-top: 5px;
+    margin-top: 4px;
 }
 
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 50px;
+    padding: 60px;
     color: #adb5bd;
 }
 
 .empty-state i {
-    font-size: 4rem;
-    margin-bottom: 10px;
+    font-size: 64px;
+    margin-bottom: 16px;
 }
 
-/* PDF Modal */
 .pdf-modal {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.8);
-    z-index: 1000;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 2000;
     display: flex;
     flex-direction: column;
 }
 
 .pdf-header {
+    height: 60px;
     background: #343a40;
-    color: white;
-    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
+    color: white;
 }
 
 .pdf-title {
-    font-weight: bold;
-    font-size: 1.1rem;
+    font-weight: 500;
+    font-size: 18px;
 }
 
 .close-btn {
-    background: #dc3545;
-    border: none;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
     color: white;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
+    transition: all 0.2s;
 }
 
 .close-btn:hover {
-    background: #c82333;
+    background: rgba(255,255,255,0.1);
 }
 
 .pdf-container {
     flex: 1;
     overflow: hidden;
     background: #525659;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
 }
 
-/* Adjust VPdfViewer container size */
-.pdf-container > div {
-    width: 100%;
-    height: 100%;
-    max-width: 1000px;
-    background: white;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .fixed-header {
+        height: 60px;
+    }
+    
+    .main-content {
+        padding-top: 75px;
+    }
+
+    .file-list {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+    .icon {
+        font-size: 36px;
+    }
+    
+    .file-item {
+        padding: 15px;
+    }
+    
+    .navigation-bar {
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .back-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 </style>
